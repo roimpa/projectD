@@ -1,0 +1,65 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:mvc="http://www.springframework.org/schema/mvc" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="
+        http://www.springframework.org/schema/beans     
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/mvc 
+        http://www.springframework.org/schema/mvc/spring-mvc.xsd
+        http://www.springframework.org/schema/context 
+        http://www.springframework.org/schema/context/spring-context.xsd">
+
+	<context:component-scan base-package="com.roic.projectd" />
+        <context:property-placeholder location="classpath:projectD.properties" />
+
+        <!-- Configuración del datasource -->
+        <bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+            <property name="driverClassName" value="org.sqlite.JDBC" />
+            <property name="url" value="jdbc:sqlite:repository.sqlite" />
+            <property name="username" value="" />
+            <property name="password" value="" />
+        </bean>
+            
+        <!-- Configuración del job -->
+        
+        <bean id="task" class="com.roic.projectd.TaskD" />
+
+	<!-- Spring Quartz -->
+	<bean id="stateDJob"
+            class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+
+            <property name="targetObject" ref="task" />
+            <property name="targetMethod" value="doTask" />
+        </bean>
+
+	<!--
+	<bean id="runMeJob"
+            class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject" ref="runMeTask" />
+		<property name="targetMethod" value="printMe" />
+	</bean>
+	-->
+
+	<!-- Cron Trigger, run every 5 seconds -->
+	<bean id="cronTrigger"
+            class="org.springframework.scheduling.quartz.CronTriggerBean">
+
+            <property name="jobDetail" ref="stateDJob" />
+            <property name="cronExpression" value="0/5 * * * * ?" />
+	</bean>
+
+	<bean class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+            <property name="jobDetails">
+                <list>
+                        <ref bean="stateDJob" />
+                </list>
+            </property>
+
+            <property name="triggers">
+                <list>
+                        <ref bean="cronTrigger" />
+                </list>
+            </property>
+	</bean>
+
+</beans>
