@@ -1,8 +1,0 @@
-com\roic\projectd\TaskD.class
-ApplicationContext.class
-com\roic\projectd\Task.class
-com\roic\projectd\entity\Valor.class
-com\roic\projectd\StateDJob.class
-com\roic\projectd\dao\ValorDao.class
-com\roic\projectd\TaskHi.class
-com\roic\projectd\utils\DBUtils.class
