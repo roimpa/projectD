@@ -14,6 +14,6 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 public class ApplicationContext {
     
     public static void main( String[] args ) throws Exception {
-    	new ClassPathXmlApplicationContext("context.xml");
+    	new ClassPathXmlApplicationContext("applicationContext.xml");
     }
 }

@@ -1,0 +1,93 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+    	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:context="http://www.springframework.org/schema/context" 
+        xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.0.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.0.xsd
+                http://www.springframework.org/schema/context 
+                http://www.springframework.org/schema/context/spring-context-3.0.xsd">
+    
+	<context:component-scan base-package="com.roic.projectd" />
+        <context:property-placeholder location="classpath:projectD.properties" />
+
+        <!-- Configuración del datasource -->
+        <bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+            <property name="driverClassName" value="org.sqlite.JDBC" />
+            <property name="url" value="jdbc:sqlite:C:\Proyectos\roic\projectDGit\projectD\repository.sqlite" />
+            <property name="username" value="" />
+            <property name="password" value="" />
+        </bean>
+        
+        <bean id="sessionFactory"
+		class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean">
+		<property name="dataSource" ref="dataSource" />
+		<property name="annotatedClasses">
+			<list>
+				<value>com.roic.projectd.entity.Datos</value>
+			</list>
+		</property>
+		<property name="hibernateProperties">
+			<props>
+				<prop key="hibernate.dialect">org.hibernate.dialect.SQLiteDialect</prop>
+				<prop key="hibernate.current_session_context_class">thread</prop>
+				<prop key="hibernate.show_sql">false</prop>
+			</props>
+		</property>
+	</bean>
+        
+        <bean id="transactionManager" 
+            class="org.springframework.orm.hibernate3.HibernateTransactionManager">
+            <property name="sessionFactory" ref="sessionFactory" />
+        </bean>
+        
+        <!--bean id="datosDao" class="com.roic.projectd.dao.DatosDao">
+		<property name="sessionFactory" ref="hibernate3AnnotatedSessionFactory" />
+	</bean-->
+            
+        <!-- Configuración del job -->
+        
+        <bean id="task" class="com.roic.projectd.TaskD" />
+
+	<!-- Spring Quartz -->
+	<bean id="stateDJob"
+            class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+
+            <property name="targetObject" ref="task" />
+            <property name="targetMethod" value="doTask" />
+        </bean>
+
+	<!--
+	<bean id="runMeJob"
+            class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject" ref="runMeTask" />
+		<property name="targetMethod" value="printMe" />
+	</bean>
+	-->
+
+	<!-- Cron Trigger, run every 5 seconds -->
+	<bean id="cronTrigger"
+            class="org.springframework.scheduling.quartz.CronTriggerBean">
+
+            <property name="jobDetail" ref="stateDJob" />
+            <property name="cronExpression" value="0/5 * * * * ?" />
+	</bean>
+
+	<bean class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+            <property name="jobDetails">
+                <list>
+                        <ref bean="stateDJob" />
+                </list>
+            </property>
+
+            <property name="triggers">
+                <list>
+                        <ref bean="cronTrigger" />
+                </list>
+            </property>
+	</bean>
+        
+        <tx:annotation-driven transaction-manager="transactionManager"/>
+
+</beans>

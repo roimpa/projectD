@@ -2,13 +2,48 @@
 <web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://java.sun.com/xml/ns/javaee" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd" version="3.0">
     <display-name>ProjectD</display-name>
 
+    <!-- Forma 3, el archivo de configuracion de spring tiene que colacarse en src/main/resources -->
     <context-param>
         <param-name>contextConfigLocation</param-name>
-        <param-value>classpath:context.xml</param-value>
+        <param-value>classpath:applicationContext.xml</param-value>
     </context-param>
 
     <listener>
         <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
     </listener>
+   
+    <!-- Forma 1, tomando el xml con la configuracion de spring desde src/main/resources -->
+    <!--servlet>
+        <servlet-name>applicationContext</servlet-name>
+        <servlet-class>
+            org.springframework.web.servlet.DispatcherServlet
+        </servlet-class>
+        <init-param>
+            <param-name>contextConfigLocation</param-name>
+            <param-value>classpath:applicationContext.xml</param-value>
+        </init-param>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+    
+    <servlet-mapping>
+        <servlet-name>applicationContext</servlet-name>
+        <url-pattern>/projectD/*</url-pattern>
+    </servlet-mapping-->
+    
+    <!-- Forma 2, tomando el xml con la configuracion de spring desde WEB-INF, en dicha carpeta debe existir
+         un xml con el nombre asignado en "servlet-name" seguido de "-servlet": ej -> applicationContext-servlet.xml -->
+    <!--servlet>
+        <servlet-name>applicationContext</servlet-name>
+        <servlet-class>
+            org.springframework.web.servlet.DispatcherServlet
+        </servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+    
+    <servlet-mapping>
+        <servlet-name>applicationContext</servlet-name>
+        <url-pattern>/projectD/*</url-pattern>
+    </servlet-mapping-->
+
 
 </web-app>
